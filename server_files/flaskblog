@@ -1,0 +1,18 @@
+# /etc/nginx/sites-available/flaskblog
+
+server {
+    listen 80;
+    server_name martintkrebs.com www.martintkrebs.com;
+
+    location = /favicon.ico {access_log off; log_not_found off;}
+    location /static/ {
+        root /home/martin/flaskblog;
+    }
+
+
+
+    location / {
+        include   	uwsgi_params;
+        uwsgi_pass 	unix:/home/martin/flaskblog/flaskblog.sock;
+    }
+}

@@ -57,3 +57,121 @@ if __name__ == '__main__':
 
 ```
 - Look at the result in the browser at http://localhost:5000
+
+## Deploy app to Linode.
+
+### Technology stack
+- Ubuntu 14.04 LTS
+- Nginx
+- uWSGI
+- Python 3 and Flask
+
+### Create required config files
+
+```
+# etc/init/uwsgi.conf
+# No need to edit this file when adding new sites.
+
+description "uWSGI application server in Emperor mode"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+
+setuid martin
+setgid www-data
+
+exec /usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
+```
+
+```
+# /etc/uwsgi/sites/flaskblog.ini
+
+[uwsgi]
+project = flaskblog
+base = /home/martin
+
+chdir = %(base)/%(project)
+home = %(base)/.virtualenvs/%(project)
+module = wsgi
+callable = app
+
+master = true
+processes = 5
+
+socket = %(base)/%(project)/%(project).sock
+chmod-socket = 664
+vacuum = true
+
+die-on-term = true
+```
+
+```
+# /etc/nginx/sites-available/flaskblog
+
+server {
+    listen 80;
+    server_name martintkrebs.com www.martintkrebs.com;
+
+    location = /favicon.ico {access_log off; log_not_found off;}
+    location /static/ {
+        root /home/martin/flaskblog;
+    }
+
+
+
+    location / {
+        include   	uwsgi_params;
+        uwsgi_pass 	unix:/home/martin/flaskblog/flaskblog.sock;
+    }
+}
+```
+
+### Create a symlink
+Create symlink from /etc/nginx/sites-available/yoursite to /etc/nginx/sites-enabled/yoursite
+eg:
+
+```
+$ sudo ln -s /etc/nginx/sites-available/yoursite  /etc/nginx/sites-enabled/yoursite
+```
+
+### scp flaskblog code up to linode
+```
+~:$ scp -r ~/Code/flaskblog martin@martintkrebs.com:/home/martin
+```
+> Later we will use rsync with exclude-list.txt to specifiy what is uploaded.
+
+### Edit the app.run() line in hello.py
+Edit so the files app.run() is:
+```
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
+```
+### Create a wsgi.py file
+create file martin@callisto:~/flaskblog$ cat wsgi.py :
+```
+from hello import app
+
+
+if __name__ == '__main__':
+    app.run()
+```
+
+### Create a the virtualenv on Linode
+$ mkvirtualenv --python=$(which python3) flaskblog
+
+### pip install libs from requirements.txt
+```
+(flaskblog) martin@callisto:~/flaskblog$ pip install -r requirements.txt
+```
+
+### Start Nginx and uWSGI servers
+```
+(flaskblog) martin@callisto:~/flaskblog$ sudo service uwsgi start
+uwsgi start/running, process 4436
+(flaskblog) martin@callisto:~/flaskblog$ sudo service nginx start
+(flaskblog) martin@callisto:~/flaskblog$
+```
+
+### View live page
+The page should now be live on the web at:  http://www.martintkrebs.com
