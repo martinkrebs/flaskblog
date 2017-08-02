@@ -1,0 +1,18 @@
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    color: #333;
+    font-size: 1.2em;
+    line-height: 1.5em;
+}
+
+#page {
+  max-width:700px;
+  margin: 0 auto;
+}
+
+span#app {
+    float: right;
+    font-style: italic;
+    font-size: smaller;
+    opacity: 0.1;
+}

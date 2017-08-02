@@ -1,0 +1,9 @@
+# rysync-exclude.txt
+
+# Exlude All files or folders called:
+rysync-exclude.txt
+.DS_Store
+.git
+.gitignore
+README.md
+__pycache__

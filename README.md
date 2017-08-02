@@ -58,6 +58,8 @@ if __name__ == '__main__':
 ```
 - Look at the result in the browser at http://localhost:5000
 
+---
+
 ## Deploy app to Linode.
 
 ### Technology stack
@@ -175,3 +177,102 @@ uwsgi start/running, process 4436
 
 ### View live page
 The page should now be live on the web at:  http://www.martintkrebs.com
+
+---
+
+## rsync, a better upload alternative to scp
+
+This will rsync a folder testdir and subcontents up to my Linode(mk:YES):
+```
+(flaskblog) ~:$ rsync -avz testdir martin@martintkrebs.com:/home/martin
+
+```
+rsync option -a indicates archive mode. -a option does the following,
+- Recursive mode
+- Preserves symbolic links
+- Preserves permissions
+- Preserves timestamp
+- Preserves owner and group
+
+v = verbose, z = compress whilst sending (this is uncompressed at the other end)
+
+#### Use rsync ssh to enable the secured remote connection.
+```
+(mtkblog_dev) ~:$ rsync -avz -e ssh testdir martin@martintkrebs.com:/home/martin
+```
+
+#### Do Not Overwrite the Modified Files at the Destination
+In a typical sync situation, if a file is modified at the destination,
+we might not want to overwrite the file with the old file from the source.
+
+Use rsync -u option to do exactly that. (i.e do not overwrite a file at the
+destination, if it is modified).
+```
+rsync -avzu -e ssh testdir martin@martintkrebs.com:/home/martin
+```
+
+#### Exclude multiple files and directories at the same time
+
+You can do this on the command line, or a better idea if you have lots of
+folders/files to exclude is to list them in an exclude file and ref this
+in your call to rsync:
+```
+(mtkblog_dev) ~:$ rsync -avz --exclude-from 'exclude-list.txt' -e ssh  testdir martin@martintkrebs.com:/home/martin
+
+```
+using this file: exclude-list.txt:
+```
+test.txt
+test3.txt
+subdir2
+subdir/testsub.txt
+
+```
+
+#### only excludiing /.blahblah not any other .blahblah files. THIS WORKS:
+```
+sent 373 bytes  received 92 bytes  930.00 bytes/sec
+total size is 85  speedup is 0.18
+(mtkblog_dev) ~:$ rsync -avz --exclude "- /.blahblah" --dry-run  testdir/ martin@martintkrebs.com:/home/martin/testdir
+building file list ... done
+created directory /home/martin/testdir
+./
+test.txt
+test2.txt
+test3.txt
+subdir/
+subdir/.blahblah
+subdir/testsub.txt
+subdir/testsub2.txt
+subdir/testsub3.txt
+subdir2/
+subdir2/testsubsub.txt
+
+```
+
+**It does not work if you do this:**
+```
+(mtkblog_dev) ~:$ rsync -avz --exclude "- /.blahblah" --dry-run  testdir martin@martintkrebs.com:/home/martin
+```
+> Thing work as you expect if you transfer from testdir/ ie the contents
+of testdir over to /home/martin/testdir
+
+> Use this form ... sourcdir/ --> /home/martin/sourcedir
+
+> NOT this form: ... sourcdir --> /home/martin
+
+
+#### rsync up to linode:
+local command line in the flaskblog folder:
+```
+(flaskblog) ~:$ rsync -avzu -e ssh --exclude-from 'flaskblog-exclude.txt' flaskblog/ martin@martintkrebs.com:/home/martin/flaskblog
+```
+
+
+on linode:
+- workon mtkblog
+- migrate db
+- collectstatic
+- start or restart nginx and uwsgi
+
+This should now work

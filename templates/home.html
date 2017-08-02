@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>martintkrebs.com</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='blog.css') }}">
+    </head>
+    <body>
+    <div id="page">
+        <h1>martintkrebs.com<span id="app">&lt;flaskblog&gt;</span></h1>
+
+        <p>This blog, along with the companion blog at
+        <a href="#">www.martintkrebs.net</a> (not live yet), have
+        been created to realise the start of an idea I had recently...</p>
+
+        <h2>The Idea.</h2>
+        <p>To develop two identical web applications, in two different
+        web frameworks and deploy them live to two domains, documenting the
+        process along the way in a series of blog posts.</p>
+
+        <p>One instance of the app would be written in the Flask/Python web
+        framework and the other in the Seaside/Smalltalk web framework. Each
+        would be deployed on its own domain, martintkrebs.com and martintkrebs.net
+        respectively.</p>
+
+        <p>Both would be served from a Linode/Ubuntu server, with Nginx set up
+        to reverse proxy to uWSGI/Gunicorn for the Flask app, and to the Seaside
+        app server for the Seaside app.</p>
+
+        <h2>The Start.</h2>
+        <p>As I needed a blogging platform for project documentation, It
+        seemed like a good idea to make the web app itself a blog, so the app
+        could be used to document its own development!</p>
+
+        <p>Development will proceed in increments and this is the first
+        (this blog page) - a simple 'Hello World' type app. Functionality will
+        be added in each increment and a blog post created for documentation.</p>
+
+        <p>For this first development increment see the first post:
+        <a href="#">#1 Hello World: A single static page.</a> (coming soon...)
+
+    </div><!--#page-->
+    </body>
+</html>
