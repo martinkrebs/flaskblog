@@ -182,7 +182,7 @@ The page should now be live on the web at:  http://www.martintkrebs.com
 
 ## rsync, a better upload alternative to scp
 
-This will rsync a folder testdir and subcontents up to my Linode(mk:YES):
+This will rsync a folder testdir and subcontents up to my Linode:
 ```
 (flaskblog) ~:$ rsync -avz testdir martin@martintkrebs.com:/home/martin
 
@@ -198,7 +198,7 @@ v = verbose, z = compress whilst sending (this is uncompressed at the other end)
 
 #### Use rsync ssh to enable the secured remote connection.
 ```
-(mtkblog_dev) ~:$ rsync -avz -e ssh testdir martin@martintkrebs.com:/home/martin
+(flaskblog) ~:$ rsync -avz -e ssh testdir martin@martintkrebs.com:/home/martin
 ```
 
 #### Do Not Overwrite the Modified Files at the Destination
@@ -217,7 +217,7 @@ You can do this on the command line, or a better idea if you have lots of
 folders/files to exclude is to list them in an exclude file and ref this
 in your call to rsync:
 ```
-(mtkblog_dev) ~:$ rsync -avz --exclude-from 'exclude-list.txt' -e ssh  testdir martin@martintkrebs.com:/home/martin
+(flaskblog) ~:$ rsync -avz --exclude-from 'exclude-list.txt' -e ssh  testdir martin@martintkrebs.com:/home/martin
 
 ```
 using this file: exclude-list.txt:
@@ -252,7 +252,7 @@ subdir2/testsubsub.txt
 
 **It does not work if you do this:**
 ```
-(mtkblog_dev) ~:$ rsync -avz --exclude "- /.blahblah" --dry-run  testdir martin@martintkrebs.com:/home/martin
+(flaskblog) ~:$ rsync -avz --exclude "- /.blahblah" --dry-run  testdir martin@martintkrebs.com:/home/martin
 ```
 > Thing work as you expect if you transfer from testdir/ ie the contents
 of testdir over to /home/martin/testdir
@@ -267,12 +267,3 @@ local command line in the flaskblog folder:
 ```
 (flaskblog) ~:$ rsync -avzu -e ssh --exclude-from 'flaskblog-exclude.txt' flaskblog/ martin@martintkrebs.com:/home/martin/flaskblog
 ```
-
-
-on linode:
-- workon mtkblog
-- migrate db
-- collectstatic
-- start or restart nginx and uwsgi
-
-This should now work
